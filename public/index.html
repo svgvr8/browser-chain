@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Demo</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const socket = io();
+
+            document.getElementById('createBlock').addEventListener('click', () => {
+                const data = `Block ${new Date().toISOString()}`;
+                socket.emit('createBlock', data);
+            });
+
+            socket.on('newBlock', (data) => {
+                const blocksContainer = document.getElementById('blocks');
+                blocksContainer.innerHTML = JSON.stringify(data.blocks, null, 2);
+            });
+        });
+    </script>
+</head>
+<body>
+    <button id="createBlock">Create Block</button>
+    <pre id="blocks"></pre>
+</body>
+</html>

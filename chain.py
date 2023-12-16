@@ -1,41 +1,78 @@
 import hashlib
 import time
+from eth_keys import keys
+from eth_utils import keccak
 from typing import Any, List
 
-# Block class
-class Block:
-    def __init__(self, index: int, timestamp: float, data: Any, previous_hash: str):
+# Ethereum Private Key (for demonstration purposes only, use a test key)
+private_key_hex = "dd90e8b1feba61b9f6b13f18a940574f01f6aa7d1dd645b4bcfa9f2fbaa51b7f"
+private_key = keys.PrivateKey(bytes.fromhex(private_key_hex))
+public_key = private_key.public_key
+address = public_key.to_checksum_address()
+
+
+class BlockBlake2bOnly:
+    def __init__(
+        self,
+        index: int,
+        timestamp: float,
+        data: Any,
+        previous_hash: str,
+        key: keys.PrivateKey,
+    ):
         self.index = index
         self.timestamp = timestamp
         self.data = data
         self.previous_hash = previous_hash
+        self.signature = self.sign_block(key)
         self.hash = self.calculate_hash()
-        self.merkle_root = None
 
     def calculate_hash(self):
         blk2b = hashlib.blake2b()
-        blk2b.update(str(self.index).encode('utf-8') +
-                     str(self.timestamp).encode('utf-8') +
-                     str(self.data).encode('utf-8') +
-                     str(self.previous_hash).encode('utf-8'))
+        blk2b.update(
+            str(self.index).encode("utf-8")
+            + str(self.timestamp).encode("utf-8")
+            + str(self.data).encode("utf-8")
+            + str(self.previous_hash).encode("utf-8")
+        )
         return blk2b.hexdigest()
 
-    def __repr__(self):
-        return f"Block(Index: {self.index}, Hash: {self.hash}, Previous Hash: {self.previous_hash}, Merkle Root: {self.merkle_root}, Data: {self.data})"
+    def sign_block(self, key: keys.PrivateKey):
+        message_hash = keccak(text=self.calculate_hash())
+        signature = key.sign_msg_hash(message_hash)
+        return signature
 
-# Basic Blockchain class
+    def __repr__(self):
+        return f"Block(Index: {self.index}, Hash: {self.hash}, Previous Hash: {self.previous_hash}, Signature: {self.signature}, Data: {self.data})"
+
+
+class SimplePatriciaTree:
+    def __init__(self):
+        self.tree = {}
+
+    def insert(self, key: str, value: Any):
+        self.tree[key] = value
+
+    def retrieve(self, key: str):
+        return self.tree.get(key, None)
+
+
 class Blockchain:
     def __init__(self):
-        self.chain: List[Block] = []
+        self.chain: List[BlockBlake2bOnly] = []
         self.create_genesis_block()
 
     def create_genesis_block(self):
-        genesis_block = Block(0, time.time(), "Genesis Block", "0")
+        genesis_block = BlockBlake2bOnly(
+            0, time.time(), "Genesis Block", "0", private_key
+        )
         self.chain.append(genesis_block)
 
     def add_block(self, data: Any):
         last_block = self.chain[-1]
-        new_block = Block(len(self.chain), time.time(), data, last_block.hash)
+        new_block = BlockBlake2bOnly(
+            len(self.chain), time.time(), data, last_block.hash, private_key
+        )
         self.chain.append(new_block)
 
     def is_valid(self):
@@ -54,105 +91,28 @@ class Blockchain:
     def __repr__(self):
         return f"Blockchain({self.chain})"
 
-# Merkle Tree class
-class MerkleTree:
-    def __init__(self, data_list):
-        self.tree = []
-        self.create_tree(data_list)
 
-    def create_tree(self, data_list):
-        tree_layer = [hashlib.blake2b(data.encode()).hexdigest() for data in data_list]
-        self.tree.append(tree_layer)
-
-        while len(tree_layer) > 1:
-            tree_layer = self.create_parent_layer(tree_layer)
-            self.tree.append(tree_layer)
-
-    def create_parent_layer(self, child_layer):
-        parent_layer = []
-        for i in range(0, len(child_layer), 2):
-            combined_hash = hashlib.blake2b((child_layer[i] + child_layer[i + 1]).encode()).hexdigest() if i + 1 < len(child_layer) else child_layer[i]
-            parent_layer.append(combined_hash)
-        return parent_layer
-
-    def get_root(self):
-        return self.tree[-1][0] if self.tree else None
-
-# Redefining the necessary classes and creating an instance of the blockchain
-
-class SimplePatriciaTree:
-    def __init__(self):
-        self.tree = {}
-
-    def insert(self, key: str, value: Any):
-        self.tree[key] = value
-
-    def retrieve(self, key: str):
-        return self.tree.get(key, None)
-
-class MerkleTree:
-    def __init__(self, data_list):
-        self.tree = []
-        self.create_tree(data_list)
-
-    def create_tree(self, data_list):
-        tree_layer = [hashlib.blake2b(data.encode()).hexdigest() for data in data_list]
-        self.tree.append(tree_layer)
-        while len(tree_layer) > 1:
-            tree_layer = self.create_parent_layer(tree_layer)
-            self.tree.append(tree_layer)
-
-    def create_parent_layer(self, child_layer):
-        parent_layer = []
-        for i in range(0, len(child_layer), 2):
-            combined_hash = hashlib.blake2b((child_layer[i] + child_layer[i + 1]).encode()).hexdigest() if i + 1 < len(child_layer) else child_layer[i]
-            parent_layer.append(combined_hash)
-        return parent_layer
-
-    def get_root(self):
-        return self.tree[-1][0] if self.tree else None
-
-class AdvancedBlockchain(Blockchain):
+class AdvancedBlockchainBlake2bOnly(Blockchain):
     def __init__(self):
         super().__init__()
         self.patricia_tree = SimplePatriciaTree()
 
     def add_block(self, data: Any):
         last_block = self.chain[-1]
-        merkle_tree = MerkleTree(data) if isinstance(data, list) else MerkleTree([data])
-        new_block = Block(len(self.chain), time.time(), data, last_block.hash)
-        new_block.merkle_root = merkle_tree.get_root()
+        new_block = BlockBlake2bOnly(
+            len(self.chain), time.time(), data, last_block.hash, private_key
+        )
         self.chain.append(new_block)
         self.patricia_tree.insert(new_block.hash, data)
 
     def retrieve_data_from_patricia(self, block_hash: str):
         return self.patricia_tree.retrieve(block_hash)
 
-# Creating and testing the blockchain
-advanced_blockchain = AdvancedBlockchain()
+
+# Creating and testing the blockchain with Blake2b only (no Merkle Tree)
+advanced_blockchain_blake2b = AdvancedBlockchainBlake2bOnly()
 for i in range(1, 11):
-    advanced_blockchain.add_block([f"Block {i} Data"])
-print(advanced_blockchain)
-# Measure the speed of Merkle Tree creation and data retrieval from the Patricia Tree for the last block
-last_block_data = advanced_blockchain.chain[-1].data
-last_block_hash = advanced_blockchain.chain[-1].hash
+    advanced_blockchain_blake2b.add_block(f"Block {i} Data")
 
-# Measure Merkle Tree creation time
-start_time = time.time()
-last_block_merkle_tree = MerkleTree(last_block_data)
-merkle_root = last_block_merkle_tree.get_root()
-end_time = time.time()
-merkle_tree_creation_time = end_time - start_time
-
-# Measure Patricia Tree data retrieval time
-start_time = time.time()
-retrieved_data = advanced_blockchain.retrieve_data_from_patricia(last_block_hash)
-end_time = time.time()
-patricia_tree_retrieval_time = end_time - start_time
-
-# Output the results
-merkle_tree_speed_result = f"Merkle Tree Creation Time: {merkle_tree_creation_time:.6f} seconds"
-patricia_tree_speed_result = f"Patricia Tree Data Retrieval Time: {patricia_tree_retrieval_time:.6f} seconds"
-
-print (merkle_tree_speed_result, patricia_tree_speed_result)
-
+# Displaying the blockchain
+print(advanced_blockchain_blake2b)
