@@ -1,27 +1,20 @@
-import ethLib from 'eth-lib';
-import jsSha3 from 'js-sha3';
+import ethers from 'ethers';
 import blakejs from 'blakejs';
 
-const { keccak256 } = jsSha3;
 const { blake2bHex } = blakejs;
 
 class BlockBlake2bOnly {
-	constructor(index, timestamp, data, previousHash, key) {
+	constructor(index, timestamp, data, previousHash, signature) {
 		this.index = index;
 		this.timestamp = timestamp;
 		this.data = data;
 		this.previousHash = previousHash;
-		this.signature = this.signBlock(key);
+		this.signature = signature;
 		this.hash = this.calculateHash();
 	}
 
 	calculateHash() {
 		return blake2bHex(this.index + this.timestamp + this.data + this.previousHash);
-	}
-
-	signBlock(key) {
-		const messageHash = keccak256(this.calculateHash());
-		return ethLib.Account.sign(messageHash, key);
 	}
 
 	toString() {
@@ -50,13 +43,19 @@ class Blockchain {
 	}
 
 	createGenesisBlock() {
-		const genesisBlock = new BlockBlake2bOnly(0, Date.now(), "Genesis Block", "0", privateKey);
+		const genesisBlock = new BlockBlake2bOnly(0, Date.now(), "Genesis Block", "0", "0x0");
 		this.chain.push(genesisBlock);
 	}
 
-	addBlock(data) {
+	addBlock(data, signature) {
 		const lastBlock = this.chain[this.chain.length - 1];
-		const newBlock = new BlockBlake2bOnly(this.chain.length, Date.now(), data, lastBlock.hash, privateKey);
+		const newBlock = new BlockBlake2bOnly(
+			this.chain.length,
+			Date.now(),
+			data,
+			lastBlock.hash,
+			signature
+		);
 		this.chain.push(newBlock);
 	}
 
@@ -88,8 +87,8 @@ export class AdvancedBlockchainBlake2bOnly extends Blockchain {
 		this.patriciaTree = new SimplePatriciaTree();
 	}
 
-	addBlock(data) {
-		super.addBlock(data);
+	addBlock(data, signature) {
+		super.addBlock(data, signature);
 		const newBlock = this.chain[this.chain.length - 1];
 		this.patriciaTree.insert(newBlock.hash, data);
 	}
@@ -98,7 +97,3 @@ export class AdvancedBlockchainBlake2bOnly extends Blockchain {
 		return this.patriciaTree.retrieve(blockHash);
 	}
 }
-
-// Ethereum Private Key (for demonstration purposes only, use a test key)
-const privateKeyHex = "dd90e8b1feba61b9f6b13f18a940574f01f6aa7d1dd645b4bcfa9f2fbaa51b7f";
-const privateKey = ethLib.Account.fromPrivate(privateKeyHex).privateKey;

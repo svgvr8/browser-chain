@@ -3,16 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blockchain Demo</title>
+    <title>Blockchain with MetaMask</title>
+    <link rel="stylesheet" href="style.css">
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+</head>
+<body>
+    <h1>Blockchain Creator</h1>
+    <button id="connectMetaMask">Connect MetaMask</button>
+    <button id="createBlockWithMetaMask">Create Block with MetaMask</button>
+    <button id="createBlockWithKeys">Create Block with ETH Keys</button>
+    <button id="generateKeys">Generate Ethereum Keys</button>
+    <button id="exportBlocks">Export Blocks as TXT</button>
+    <pre id="keys"></pre>
+    <pre id="blocks"></pre>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const socket = io();
+            let userAddress = null;
+            let privateKey = null;
+            let publicKey = null;
 
-            document.getElementById('createBlock').addEventListener('click', () => {
-                const data = `Block ${new Date().toISOString()}`;
-                socket.emit('createBlock', data);
+            async function connectMetaMask() {
+                if (window.ethereum) {
+                    try {
+                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        userAddress = accounts[0];
+                        console.log('Connected with address:', userAddress);
+                    } catch (error) {
+                        console.error('User denied account access');
+                    }
+                } else {
+                    console.log('MetaMask is not installed!');
+                }
+            }
+
+            async function createBlockWithMetaMask() {
+                if (!userAddress) {
+                    alert('Please connect to MetaMask first.');
+                    return;
+                }
+                const dataToSign = `Block created at ${new Date().toISOString()}`;
+                const signature = await window.ethereum.request({
+                    method: 'personal_sign',
+                    params: [dataToSign, userAddress]
+                });
+                socket.emit('createBlock', { data: dataToSign, signature: signature });
+            }
+
+            async function createBlockWithKeys() {
+                if (!privateKey) {
+                    alert('Please generate Ethereum keys first.');
+                    return;
+                }
+                const dataToSign = `Block created at ${new Date().toISOString()}`;
+                const signature = ethers.utils.joinSignature(ethers.utils.signingKey(privateKey).signDigest(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(dataToSign))));
+                socket.emit('createBlock', { data: dataToSign, signature: signature, publicKey: publicKey });
+            }
+
+            document.getElementById('connectMetaMask').addEventListener('click', connectMetaMask);
+            document.getElementById('createBlockWithMetaMask').addEventListener('click', createBlockWithMetaMask);
+            document.getElementById('createBlockWithKeys').addEventListener('click', createBlockWithKeys);
+
+            document.getElementById('generateKeys').addEventListener('click', () => {
+                const wallet = ethers.Wallet.createRandom();
+                privateKey = wallet.privateKey;
+                publicKey = wallet.address;
+                const keysContainer = document.getElementById('keys');
+                keysContainer.textContent = `Public Key: ${publicKey}\nPrivate Key: ${privateKey}`;
             });
+
+            document.getElementById('exportBlocks').addEventListener('click', () => {
+                const blocksData = JSON.stringify(socket.chain, null, 2);
+                download('blockchain.txt', blocksData);
+            });
+
+            function download(filename, text) {
+                const element = document.createElement('a');
+                element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+                element.setAttribute('download', filename);
+                element.style.display = 'none';
+                document.body.appendChild(element);
+                element.click();
+                document.body.removeChild(element);
+            }
 
             socket.on('newBlock', (data) => {
                 const blocksContainer = document.getElementById('blocks');
@@ -20,9 +95,5 @@
             });
         });
     </script>
-</head>
-<body>
-    <button id="createBlock">Create Block</button>
-    <pre id="blocks"></pre>
 </body>
 </html>

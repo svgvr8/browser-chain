@@ -1,22 +1,25 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { AdvancedBlockchainBlake2bOnly } from './chain.js'; // Assume your blockchain code is in 'chain.mjs'
+import { AdvancedBlockchainBlake2bOnly } from './chain.js'; // Adjust path as necessary
 
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer);
 
-// Initialize blockchain
 const blockchain = new AdvancedBlockchainBlake2bOnly();
 
-// Serve static files (HTML, CSS, JS)
 app.use(express.static('public'));
 
-// Socket.io for real-time communication
 io.on('connection', (socket) => {
-	socket.on('createBlock', (data) => {
-		blockchain.addBlock(data);
+	socket.on('createBlock', ({ data, signature, publicKey }) => {
+		if (publicKey) {
+			// Handle block creation with Ethereum keys
+			blockchain.addBlock(data, signature);
+		} else {
+			// Handle block creation with MetaMask
+			blockchain.addBlock(data, signature);
+		}
 		io.emit('newBlock', { blocks: blockchain.chain });
 	});
 });
