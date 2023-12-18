@@ -10,11 +10,11 @@
 </head>
 <body>
     <h1>Blockchain Creator</h1>
-    <button id="connectMetaMask">Connect MetaMask</button>
-    <button id="createBlockWithMetaMask">Create Block with MetaMask</button>
-    <button id="createBlockWithKeys">Create Block with ETH Keys</button>
-    <button id="generateKeys">Generate Ethereum Keys</button>
-    <button id="exportBlocks">Export Blocks as TXT</button>
+    <!-- <button id="connectMetaMask">Connect MetaMask</button> -->
+	<button id="generateKeys">Generate custom Ethereum Keys</button>
+	<button id="createBlockWithKeys">Create Block with your custom Keys</button>
+    <button id="createBlockWithMetaMask">Create Block with your MetaMask Keys</button>
+    <!-- <button id="exportBlocks">Export Blocks as TXT</button> -->
     <pre id="keys"></pre>
     <pre id="blocks"></pre>
 
@@ -25,19 +25,21 @@
             let privateKey = null;
             let publicKey = null;
 
-            async function connectMetaMask() {
-                if (window.ethereum) {
-                    try {
-                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                        userAddress = accounts[0];
-                        console.log('Connected with address:', userAddress);
-                    } catch (error) {
-                        console.error('User denied account access');
-                    }
-                } else {
-                    console.log('MetaMask is not installed!');
-                }
-            }
+			async function connectMetaMask() {
+    if (window.ethereum) {
+        try {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            userAddress = accounts[0];
+            console.log('Connected with address:', userAddress);
+        } catch (error) {
+            console.error('User denied account access', error);
+        }
+    } else {
+        console.log('MetaMask is not installed!');
+    }
+}
+
+
 
             async function createBlockWithMetaMask() {
                 if (!userAddress) {
@@ -52,17 +54,22 @@
                 socket.emit('createBlock', { data: dataToSign, signature: signature });
             }
 
-            async function createBlockWithKeys() {
-                if (!privateKey) {
-                    alert('Please generate Ethereum keys first.');
-                    return;
-                }
-                const dataToSign = `Block created at ${new Date().toISOString()}`;
-                const signature = ethers.utils.joinSignature(ethers.utils.signingKey(privateKey).signDigest(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(dataToSign))));
-                socket.emit('createBlock', { data: dataToSign, signature: signature, publicKey: publicKey });
-            }
+			async function createBlockWithKeys() {
+	if (!privateKey) {
+		alert('Please generate Ethereum keys first.');
+		return;
+	}
+	const dataToSign = `Block created at ${new Date().toISOString()}`;
 
-            document.getElementById('connectMetaMask').addEventListener('click', connectMetaMask);
+	// Use Wallet object to sign the message
+	const wallet = new ethers.Wallet(privateKey);
+	const signature = await wallet.signMessage(dataToSign);
+
+	socket.emit('createBlock', { data: dataToSign, signature: signature, publicKey: wallet.address });
+}
+
+
+            // document.getElementById('connectMetaMask').addEventListener('click', connectMetaMask);
             document.getElementById('createBlockWithMetaMask').addEventListener('click', createBlockWithMetaMask);
             document.getElementById('createBlockWithKeys').addEventListener('click', createBlockWithKeys);
 
@@ -74,22 +81,23 @@
                 keysContainer.textContent = `Public Key: ${publicKey}\nPrivate Key: ${privateKey}`;
             });
 
-            document.getElementById('exportBlocks').addEventListener('click', () => {
-                const blocksData = JSON.stringify(socket.chain, null, 2);
-                download('blockchain.txt', blocksData);
-            });
+            // document.getElementById('exportBlocks').addEventListener('click', () => {
+            //     const blocksData = JSON.stringify(socket.chain, null, 2);
+            //     download('blockchain.txt', blocksData);
+            // });
 
-            function download(filename, text) {
-                const element = document.createElement('a');
-                element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-                element.setAttribute('download', filename);
-                element.style.display = 'none';
-                document.body.appendChild(element);
-                element.click();
-                document.body.removeChild(element);
-            }
+            // function download(filename, text) {
+            //     const element = document.createElement('a');
+            //     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            //     element.setAttribute('download', filename);
+            //     element.style.display = 'none';
+            //     document.body.appendChild(element);
+            //     element.click();
+            //     document.body.removeChild(element);
+            // }
 
             socket.on('newBlock', (data) => {
+				blockchainData = data.blocks; 
                 const blocksContainer = document.getElementById('blocks');
                 blocksContainer.innerHTML = JSON.stringify(data.blocks, null, 2);
             });
