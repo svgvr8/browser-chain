@@ -1,114 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GanZ - Blockchain</title>
+  <head>
+    <meta charset="utf-8" />
     <link rel="icon" type="image/svg" href="https://logosandtypes.com/wp-content/uploads/2023/04/givaudan.svg" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
-</head>
-<body>
-    <h1>BrowserChain</h1>
-    <button id="connectMetaMask">Connect MetaMask</button>
-    <button id="generateKeys">Gen Eth Keys</button>
-    <button id="createBlockWithKeys">Block Gen - Eth Keys</button>
-    <button id="createBlockWithMetaMask">Block Gen - Metamask</button>
-    <pre id="keys"></pre>
-    <div id="blocks-container"></div>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const socket = io();
-            let userAddress = null;
-            let privateKey = null;
-            let publicKey = null;
-            const keysContainer = document.getElementById('keys');
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>React App</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
 
-            async function connectMetaMask() {
-                if (window.ethereum) {
-                    try {
-                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                        userAddress = accounts[0];
-                        console.log('Connected with address:', userAddress);
-                    } catch (error) {
-                        console.error('User denied account access', error);
-                    }
-                } else {
-                    console.log('MetaMask is not installed!');
-                }
-            }
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
 
-            async function createBlockWithMetaMask() {
-                if (!userAddress) {
-                    alert('Please connect to MetaMask first.');
-                    return;
-                }
-                const dataToSign = `Block created at ${new Date().toISOString()}`;
-                const signature = await window.ethereum.request({
-                    method: 'personal_sign',
-                    params: [dataToSign, userAddress]
-                });
-                socket.emit('createBlock', { data: dataToSign, signature: signature, userAddress: userAddress });
-            }
-
-            document.getElementById('connectMetaMask').addEventListener('click', connectMetaMask);
-            document.getElementById('createBlockWithMetaMask').addEventListener('click', createBlockWithMetaMask);
-
-            document.getElementById('generateKeys').addEventListener('click', () => {
-                const wallet = ethers.Wallet.createRandom();
-                privateKey = wallet.privateKey;
-                publicKey = wallet.address;
-                keysContainer.textContent = `Public Key: ${publicKey}\nPrivate Key: ${privateKey}`;
-            });
-
-            async function createBlockWithKeys() {
-                if (!privateKey || !publicKey) {
-                    alert('Please generate Ethereum keys first.');
-                    return;
-                }
-                const dataToSign = `Block created at ${new Date().toISOString()}`;
-
-                const wallet = new ethers.Wallet(privateKey);
-                const signature = await wallet.signMessage(dataToSign);
-
-                socket.emit('createBlock', { data: dataToSign, signature: signature, publicKey: wallet.address });
-                keysContainer.textContent = `Public Key: ${publicKey}\nPrivate Key: ${privateKey}`;
-            }
-
-            document.getElementById('createBlockWithKeys').addEventListener('click', createBlockWithKeys);
-
-            function displayBlockchainData(blockchainData) {
-                const container = document.getElementById('blocks-container');
-                container.innerHTML = '';
-
-                blockchainData.forEach(block => {
-                    const blockElement = document.createElement('div');
-                    blockElement.className = 'block-card';
-
-                    const formattedDate = new Date(block.timestamp).toLocaleString();
-
-                    blockElement.innerHTML = `
-                        <div class="card-header">Block #${block.index}</div>
-                        <div class="card-body">
-                            <p><strong>Timestamp:</strong> ${formattedDate}</p>
-                            <p><strong>Data:</strong> ${block.data}</p>
-                            <p><strong>Previous Hash:</strong> ${block.previousHash}</p>
-                            <p><strong>Signature:</strong> ${block.signature}</p>
-                            <p><strong>Hash:</strong> ${block.hash}</p>
-                        </div>
-                    `;
-
-                    container.appendChild(blockElement);
-                });
-            }
-
-            socket.on('newBlock', (data) => {
-                displayBlockchainData(data.blocks);
-            });
-        });
-    </script>
-</body>
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+  </body>
 </html>

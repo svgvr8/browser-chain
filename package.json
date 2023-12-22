@@ -1,30 +1,40 @@
 {
-  "name": "chainsql",
-  "version": "1.0.0",
-  "type": "module",
-  "description": "",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/svgvr8/ChainSQL.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/svgvr8/ChainSQL/issues"
-  },
-  "homepage": "https://github.com/svgvr8/ChainSQL#readme",
+  "name": "chain",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
-    "blake2": "^5.0.0",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
     "blakejs": "^1.2.1",
-    "body-parser": "^1.20.2",
-    "eth-lib": "^0.1.29",
-    "express": "^4.18.2",
-    "js-sha3": "^0.9.3",
-    "merkletreejs": "^0.3.11",
-    "socket.io": "^4.7.2"
+    "ethers": "^6.9.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
