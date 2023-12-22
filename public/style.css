@@ -1,135 +1,146 @@
 :root {
-	/* Fonts */
-	--font-base: 'Inter', sans-serif;
+    /* Fonts */
+    --font-base: 'Inter', sans-serif;
 
-	/* Colors */
-	--color-background: #f5f6f7;
-	--color-text: #3a3a3d;
-	--color-primary: #1652f0;
-	/* Coinbase blue */
-	--color-secondary: #05b169;
-	/* Secondary action color */
-	--color-border: #e6e6e6;
-	--color-card-bg: #ffffff;
+    /* Colors */
+    --color-background: #f5f6f7;
+    --color-text: #3a3a3d;
+    --color-primary: #1652f0; /* Coinbase blue */
+    --color-secondary: #05b169; /* Secondary action color */
+    --color-border: #e6e6e6;
+    --color-card-bg: #ffffff;
 
-	/* Font sizes */
-	--font-size-large: 1.75rem;
-	--font-size-medium: 1rem;
-	--font-size-small: 0.875rem;
+    /* Font sizes */
+    --font-size-large: 1.75rem;
+    --font-size-medium: 1rem;
+    --font-size-small: 0.875rem;
 }
 
-body,
-button,
-input,
-textarea,
-pre,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-a {
-	font-family: 'Inter', sans-serif;
+body, button, input, textarea, pre, h1, h2, h3, h4, h5, h6, p, a {
+    font-family: 'Inter', sans-serif;
 }
 
 body {
-	margin: 0;
-	font-family: var(--font-base);
-	background-color: var(--color-background);
-	color: var(--color-text);
-	text-align: center;
-	line-height: 1.6;
+    margin: 0;
+    font-family: var(--font-base);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    text-align: center;
+    line-height: 1.6;
 }
 
 h1 {
-	font-size: var(--font-size-large);
-	margin-bottom: 2rem;
-	color: var(--color-primary);
+    font-size: var(--font-size-large);
+    margin-bottom: 2rem;
+    color: var(--color-primary);
 }
 
 button {
-	background-color: var(--color-primary);
-	color: #ffffff;
-	padding: 1rem 1.5rem;
-	font-size: var(--font-size-medium);
-	border: none;
-	border-radius: 0.5rem;
-	cursor: pointer;
-	transition: background-color 0.3s ease;
-	margin: 0.5rem;
+    background-color: var(--color-primary);
+    color: #ffffff;
+    padding: 1rem 1.5rem;
+    font-size: var(--font-size-medium);
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 0.5rem;
 }
 
 button:hover {
-	background-color: var(--color-secondary);
+    background-color: var(--color-secondary);
 }
 
 button:active {
-	box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
 pre {
-	background-color: var(--color-card-bg);
-	border: 1px solid var(--color-border);
-	border-radius: 0.5rem;
-	padding: 1rem;
-	margin: 1rem auto;
-	width: 90%;
-	max-width: 800px;
-	white-space: pre-wrap;
-	word-break: break-all;
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem auto;
+    width: 90%;
+    max-width: 800px;
+    white-space: pre-wrap;
+    word-break: break-all;
 }
 
 #blocks-container {
-	padding: 1rem;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
+    padding: 1rem;
+    display: block; /* Changed from flex to block to stack the divs */
+    max-width: 100%; /* Ensures the container doesn't exceed screen width */
+    margin: 0 auto; /* Centers the container */
+    box-sizing: border-box; /* Includes padding and border in the element's total width */
+} 		
 
 .block {
-	background-color: var(--color-card-bg);
-	border: 1px solid var(--color-border);
-	border-radius: 0.5rem;
-	padding: 1rem;
-	margin-bottom: 1rem;
-	width: 100%;
-	max-width: 400px;
-	text-align: left;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-	word-wrap: break-word;
-	overflow-wrap: break-word;
-}
-
-.block h3 {
-	color: var(--color-primary);
-	margin-bottom: 1rem;
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    margin: 1rem auto; /* Centers the block */
+    padding: 1rem;
+    width: calc(100% - 2rem); /* Full width minus padding */
+    text-align: left;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    overflow-x: auto; /* Enables horizontal scrolling */
+    box-sizing: border-box;
+    word-wrap: break-word; /* Allow long words to break and wrap onto the next line */
 }
 
 .block p {
-	color: var(--color-text);
-	font-size: var(--font-size-small);
-	margin: 0.5rem 0;
+    white-space: nowrap; /* Keeps the text in a single line */
+    overflow-x: auto; /* Enables horizontal scrolling within the paragraph */
+    text-overflow: ellipsis; /* Adds an ellipsis if text overflows */
+}
+
+
+
+.block h3 {
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+}
+
+@media screen and (max-width: 425px) {
+    .block {
+        width: 100%; /* Take the full width on smaller screens */
+        margin: 10px auto; /* Keep the block centered with vertical margin */
+        padding: 10px; /* Sufficient padding */
+    }
 }
 
 @media screen and (min-width: 768px) {
-	#blocks-container {
-		flex-direction: row;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: 1rem;
-	}
+    #blocks-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
 
-	.block {
-		width: calc(50% - 2rem);
-		/* For two columns layout */
-	}
+    .block {
+        width: calc(50% - 2rem); /* For two columns layout */
+    }
 }
 
 @media screen and (min-width: 1024px) {
-	.block {
-		width: calc(33.33% - 2rem);
-		/* For three columns layout */
-	}
+    .block {
+        width: calc(33.33% - 2rem); /* For three columns layout */
+    }
+}
+
+.card-header {
+    background-color: var(--color-primary);
+    color: #ffffff;
+    padding: 10px;
+    font-size: var(--font-size-medium);
+    text-align: center;
+    border-radius: 0.5rem 0.5rem 0 0; /* Round top corners */
+}
+
+.card-body {
+    padding: 15px;
+    font-size: var(--font-size-small);
+    color: var(--color-text);
+    text-align: left; /* Align text to the left within card */
 }
