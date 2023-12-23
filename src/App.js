@@ -177,37 +177,41 @@ const App = () => {
 
 	const verifySignature = async (block) => {
 		try {
-			if (!window.ethereum) {
-				console.error('MetaMask is not installed!');
+			let recoveredAddress;
+
+			if (window.ethereum) {
+				// Use MetaMask for signature verification
+				const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+				const currentUserAddress = accounts[0];
+
+				recoveredAddress = await window.ethereum.request({
+					method: 'personal_ecRecover',
+					params: [block.data, block.signature]
+				});
+
+				let message = `${recoveredAddress} is the signer of block #${block.index}`;
+				if (recoveredAddress.toLowerCase() === currentUserAddress.toLowerCase()) {
+					message += " (verified by you)";
+				}
+
 				setVerificationMessages(prevMessages => ({
 					...prevMessages,
-					[block.index]: 'MetaMask is not installed!'
+					[block.index]: message
 				}));
-				return;
-			}
-
-			const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-			const currentUserAddress = accounts[0];
-
-			const originalMessage = block.data;
-			const signature = block.signature;
-
-			const recoveredAddress = await window.ethereum.request({
-				method: 'personal_ecRecover',
-				params: [originalMessage, signature]
-			});
-
-			let message;
-			if (recoveredAddress.toLowerCase() === currentUserAddress.toLowerCase()) {
-				message = `#${block.index} is verified by you`;
 			} else {
-				message = `${recoveredAddress} is the owner of block #${block.index}`;
-			}
+				// Use Ethers.js for signature verification
+				console.error('MetaMask is not installed! Using Ethers.js for signature verification.');
+				setVerificationMessages(prevMessages => ({
+					...prevMessages,
+					[block.index]: 'MetaMask is not installed! Using Ethers.js for signature verification.'
+				}));
 
-			setVerificationMessages(prevMessages => ({
-				...prevMessages,
-				[block.index]: message
-			}));
+				recoveredAddress = ethers.verifyMessage(block.data, block.signature);
+				setVerificationMessages(prevMessages => ({
+					...prevMessages,
+					[block.index]: `${recoveredAddress} is the signer of block #${block.index}`
+				}));
+			}
 		} catch (error) {
 			console.error('Error verifying signature:', error);
 			setVerificationMessages(prevMessages => ({
@@ -216,6 +220,7 @@ const App = () => {
 			}));
 		}
 	};
+
 
 	return (
 		<div>
