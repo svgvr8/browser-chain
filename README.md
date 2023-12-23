@@ -1,4 +1,4 @@
-# BrowserChain: 200,000 Blocks per second on a PC
+# BrowserChain: A browser based blockchain, optimized for speed.
 
 This project live on my site [BrowserChain](https://chain.sagaryadav.xyz/).
 
