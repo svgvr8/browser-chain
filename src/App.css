@@ -144,3 +144,46 @@ pre {
     color: var(--color-text);
     text-align: left; /* Align text to the left within card */
 }
+
+.verification-message {
+    color: var(--color-secondary); /* Using secondary action color for standard messages */
+    font-size: var(--font-size-small);
+    margin-top: 10px; /* Spacing above the message */
+    padding: 5px;
+    border-radius: 0.25rem;
+}
+
+.verification-message.error {
+    color: red; /* Red color for error messages */
+}
+
+
+.executive-summary {
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    margin: 1rem auto; /* Centers the block */
+    padding: 1rem;
+    width: calc(100% - 2rem); /* Full width minus padding */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box; /* Includes padding and border in the element's total width */
+    text-align: center; /* Center the text */
+    font-size: var(--font-size-small); /* Matching the font size with keys container */
+}
+
+.executive-summary p, .executive-summary ul, .executive-summary li {
+    font-size: inherit; /* Ensure all child elements inherit the same font size */
+    margin: 0.5rem 0; /* Spacing */
+}
+
+.executive-summary ul {
+    text-align: left; /* Keep list items left-aligned */
+    display: inline-block; /* Align the block of list items */
+    margin-left: 0; /* Adjust left margin as needed */
+    padding-left: 20px; /* Padding for list items */
+}
+
+.executive-summary li {
+    margin-bottom: 0.5rem; /* Spacing between list items */
+}
+

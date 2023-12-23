@@ -3,6 +3,8 @@ import { ethers } from 'ethers';
 import blakejs from 'blakejs';
 import './App.css';
 
+// const { ethers } = ethers;
+
 const { blake2bHex } = blakejs;
 
 class BlockBlake2bOnly {
@@ -105,6 +107,8 @@ const App = () => {
 	const [keys, setKeys] = useState({ publicKey: '', privateKey: '' });
 	const [blockchain, setBlockchain] = useState(new AdvancedBlockchainBlake2bOnly());
 	const [blocks, setBlocks] = useState([]);
+	const [verificationMessages, setVerificationMessages] = useState({});
+
 
 	useEffect(() => {
 		setBlocks(blockchain.chain);
@@ -154,14 +158,82 @@ const App = () => {
 		blockchain.addBlock(dataToSign, signature);
 		setBlocks([...blockchain.chain]);
 	};
+	const verifyBlock = (block) => {
+		const recalculatedHash = blake2bHex(block.index + block.timestamp + block.data + block.previousHash);
+		let message;
+
+		if (recalculatedHash === block.hash) {
+			message = `Block #${block.index} is valid.`;
+		} else {
+			message = `Block #${block.index} is not valid!`;
+		}
+
+		setVerificationMessages(prevMessages => ({
+			...prevMessages,
+			[block.index]: message
+		}));
+	};
+
+
+	const verifySignature = async (block) => {
+		try {
+			if (!window.ethereum) {
+				console.error('MetaMask is not installed!');
+				setVerificationMessages(prevMessages => ({
+					...prevMessages,
+					[block.index]: 'MetaMask is not installed!'
+				}));
+				return;
+			}
+
+			const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+			const currentUserAddress = accounts[0];
+
+			const originalMessage = block.data;
+			const signature = block.signature;
+
+			const recoveredAddress = await window.ethereum.request({
+				method: 'personal_ecRecover',
+				params: [originalMessage, signature]
+			});
+
+			let message;
+			if (recoveredAddress.toLowerCase() === currentUserAddress.toLowerCase()) {
+				message = `#${block.index} is verified by you`;
+			} else {
+				message = `${recoveredAddress} is the owner of block #${block.index}`;
+			}
+
+			setVerificationMessages(prevMessages => ({
+				...prevMessages,
+				[block.index]: message
+			}));
+		} catch (error) {
+			console.error('Error verifying signature:', error);
+			setVerificationMessages(prevMessages => ({
+				...prevMessages,
+				[block.index]: `Error verifying block #${block.index}`
+			}));
+		}
+	};
 
 	return (
 		<div>
 			<h1>BrowserChain</h1>
-			<button id="connectMetaMask" onClick={connectMetaMask}>Connect MetaMask</button>
-			<button id="generateKeys" onClick={generateKeys}>Gen Eth Keys</button>
-			<button id="createBlockWithKeys" onClick={createBlockWithKeys}>Block Gen - Eth Keys</button>
-			<button id="createBlockWithMetaMask" onClick={createBlockWithMetaMask}>Block Gen - Metamask</button>
+			<section className="executive-summary">
+				<p>Welcome to BrowserChain! This application is a blockchain running in your browser.</p>
+				<ul>
+					<li>Creating and verifying blocks using BLAKE2b hashing.</li>
+					<li>Integrating with MetaMask for Ethereum-based transactions.</li>
+					<li>Signature verification using Ethereum keys.</li>
+					<li>A Patricia tree implementation for rapid data retrieval.</li>
+				</ul>
+				<p>Explore and interact with blockchain technology right from your browser!</p>
+			</section>
+			<button id="connectMetaMask" onClick={connectMetaMask} title="Connect to your MetaMask wallet">Connect MetaMask</button>
+			<button id="generateKeys" onClick={generateKeys} title="Create your key pair to sign blocks">Get Ethereum Keys</button>
+			<button id="createBlockWithKeys" onClick={createBlockWithKeys} title="Create your ethereum key pairs, if you don't have metamask">Create Block (Ethereum)</button>
+			<button id="createBlockWithMetaMask" onClick={createBlockWithMetaMask} title="Create a block using your metamask keys">Create Block (MetaMask)</button>
 			<pre id="keys">{`Public Key: ${keys.publicKey}\nPrivate Key: ${keys.privateKey}`}</pre>
 			<div id="blocks-container">
 				{blocks.map((block, index) => (
@@ -173,6 +245,11 @@ const App = () => {
 							<p><strong>Previous Hash:</strong> {block.previousHash}</p>
 							<p><strong>Signature:</strong> {block.signature}</p>
 							<p><strong>Hash:</strong> {block.hash}</p>
+							<button onClick={() => verifyBlock(block)}>Verify Block</button>
+							<button onClick={() => verifySignature(block)}>Verify Signature</button>
+							<div className="verification-message">
+								{verificationMessages[block.index]}
+							</div>
 						</div>
 					</div>
 				))}
