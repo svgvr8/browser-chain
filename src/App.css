@@ -1,23 +1,25 @@
+@import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800;900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
+
 :root {
     /* Fonts */
-    --font-base: 'Inter', sans-serif;
+    --font-base: 'Space Mono', monospace;
 
     /* Colors */
-    --color-background: #f5f6f7;
-    --color-text: #3a3a3d;
-    --color-primary: #1652f0; /* Coinbase blue */
-    --color-secondary: #05b169; /* Secondary action color */
-    --color-border: #e6e6e6;
-    --color-card-bg: #ffffff;
+    --color-background: #212121;
+    --color-text: #ddd;
+    --color-card-bg: #2b2b2b;
+    --color-border: #eceff133;
+    --color-card-bg: #2b2b2b;
 
     /* Font sizes */
-    --font-size-large: 1.75rem;
-    --font-size-medium: 1rem;
+    --font-size-large: 2.25em;
+    --font-size-medium: 1.1rem;
     --font-size-small: 0.875rem;
 }
 
 body, button, input, textarea, pre, h1, h2, h3, h4, h5, h6, p, a {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-base);
 }
 
 body {
@@ -29,15 +31,17 @@ body {
     line-height: 1.6;
 }
 
+
+
 h1 {
     font-size: var(--font-size-large);
     margin-bottom: 2rem;
-    color: var(--color-primary);
+    color: #ffffff;
 }
 
 button {
-    background-color: var(--color-primary);
-    color: #ffffff;
+    background-color: #0d0d0d; /* Almost black */
+    color: #ffffff; /* White */
     padding: 1rem 1.5rem;
     font-size: var(--font-size-medium);
     border: none;
@@ -48,7 +52,7 @@ button {
 }
 
 button:hover {
-    background-color: var(--color-secondary);
+    background-color: #6a6a6a; /* Slightly lighter black for hover effect */
 }
 
 button:active {
@@ -98,7 +102,7 @@ pre {
 
 
 .block h3 {
-    color: var(--color-primary);
+    color: #ffffff; /* White */
     margin-bottom: 1rem;
 }
 
@@ -130,7 +134,7 @@ pre {
 }
 
 .card-header {
-    background-color: var(--color-primary);
+    background-color: var(--color-card-bg);
     color: #ffffff;
     padding: 10px;
     font-size: var(--font-size-medium);
@@ -157,33 +161,258 @@ pre {
     color: red; /* Red color for error messages */
 }
 
+/* CSS 2 File Content (With Duplicates Removed) */
 
-.executive-summary {
+/* Removed duplicate font import and body tag styles */
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style: none;
+}
+
+.main {
+  max-width: 75rem;
+  padding: 3em 1.5em;
+}
+
+.main__heading {
+  font-weight: 600;
+  font-size: 2.25em;
+  margin-bottom: 0.75em;
+  text-align: center;
+  color: #eceff1;
+}
+
+.cards {
+  position: relative;
+}
+
+.cards__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5em;
+}
+
+.card {
+  --flow-space: 0.5em;
+  flex: 1 1 14rem;
+  padding: 1.5em 2em;
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  align-items: start;
+  gap: var(--flow-space);
+  color: #eceff1;
+  background-color: #2b2b2b;
+  border: 1px solid #eceff133;
+  border-radius: 15px;
+}
+
+.card:nth-child(1) {
+  --hue: 165;
+  --saturation: 82.26%;
+  --lightness: 51.37%;
+}
+
+.card:nth-child(2) {
+  --hue: 291.34;
+  --saturation: 95.9%;
+  --lightness: 61.76%;
+}
+
+.card:nth-child(3) {
+  --hue: 338.69;
+  --saturation: 100%;
+  --lightness: 48.04%;
+}
+
+.card__bullets {
+  line-height: 1.4;
+}
+
+.card__bullets li::before {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='16' title='check' fill='%23dddddd'%3E%3Cpath d='M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c-9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c-9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c-9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z' /%3E%3C/svg%3E");
+  transform: translatey(0.25ch);
+  margin-right: 1ch;
+}
+
+.card__heading {
+  font-size: 1.05em;
+  font-weight: 600;
+}
+
+.card__price {
+  font-size: 1.75em;
+  font-weight: 700;
+}
+
+.flow > * + * {
+  margin-top: var(--flow-space, 1.25em);
+}
+
+.cta {
+  display: block;
+  align-self: end;
+  margin: 1em 0 0.5em 0;
+  text-align: center;
+  text-decoration: none;
+  color: #fff;
+  background-color: #0d0d0d;
+  padding: 0.7em;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+  opacity: var(--opacity, 0);
+  -webkit-mask: radial-gradient(
+    25rem 25rem at var(--x) var(--y),
+    #000 1%,
+    transparent 50%
+  );
+  mask: radial-gradient(
+    25rem 25rem at var(--x) var(--y),
+    #000 1%,
+    transparent 50%
+  );
+  transition: 400ms mask ease;
+  will-change: mask;
+}
+
+.overlay .card {
+  background-color: hsla(var(--hsl), 0.15);
+  border-color: hsla(var(--hsl), 1);
+  box-shadow: 0 0 0 1px inset hsl(var(--hsl));
+}
+
+.overlay .cta {
+  display: block;
+  grid-row: -1;
+  width: 100%;
+  background-color: hsl(var(--hsl));
+  box-shadow: 0 0 0 1px hsl(var(--hsl));
+}
+
+:not(.overlay) > .card {
+  transition: 400ms background ease;
+  will-change: background;
+}
+
+:not(.overlay) > .card:hover {
+  --lightness: 95%;
+  background: hsla(var(--hsl), 0.1);
+}
+
+.buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Adjust the space between buttons as needed */
+    justify-content: center; /* Center the buttons in the container */
+}
+
+.buttons-container button {
+    flex: 1; /* Each button will grow to fill the space equally */
+    min-width: 150px; /* Minimum width for each button */
+    max-width: 200px; /* Maximum width for each button */
+    padding: 10px 15px; /* Add padding for better appearance */
+    text-align: center; /* Ensure text is centered */
+}
+/* Navbar Styles */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background-color: var(--color-card-bg);
-    border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
-    margin: 1rem auto; /* Centers the block */
+    color: var(--color-text);
     padding: 1rem;
-    width: calc(100% - 2rem); /* Full width minus padding */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    box-sizing: border-box; /* Includes padding and border in the element's total width */
-    text-align: center; /* Center the text */
-    font-size: var(--font-size-small); /* Matching the font size with keys container */
+    font-family: var(--font-base);
 }
 
-.executive-summary p, .executive-summary ul, .executive-summary li {
-    font-size: inherit; /* Ensure all child elements inherit the same font size */
-    margin: 0.5rem 0; /* Spacing */
+.navbar-brand {
+    font-size: var(--font-size-large);
+    color: var(--color-secondary);
 }
 
-.executive-summary ul {
-    text-align: left; /* Keep list items left-aligned */
-    display: inline-block; /* Align the block of list items */
-    margin-left: 0; /* Adjust left margin as needed */
-    padding-left: 20px; /* Padding for list items */
+.navbar-links a, .navbar-links button {
+    color: var(--color-text);
+    text-decoration: none;
+    margin-left: 15px;
+    background-color: var(--color-secondary);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.executive-summary li {
-    margin-bottom: 0.5rem; /* Spacing between list items */
+.navbar-links a:hover, .navbar-links button:hover {
+    background-color: #6a6a6a; /* Slightly lighter black for hover effect */
 }
 
+.navbar-hamburger {
+    display: none;
+    cursor: pointer;
+    font-size: 1.5rem; /* Adjust size of hamburger icon */
+    color: var(--color-text);
+}
+
+.navbar-links {
+    display: flex;
+}
+
+/* When screen size is small */
+@media screen and (max-width: 768px) {
+    .navbar-hamburger {
+        display: block;
+    }
+
+    .navbar-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        right: 0;
+        top: 60px; /* Adjust based on the height of your navbar */
+        background-color: var(--color-card-bg);
+        width: 100%;
+    }
+
+    .navbar-links.active {
+        display: flex;
+    }
+
+    /* Styles for links and buttons when in mobile view */
+    .navbar-links a, .navbar-links button {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin: 0;
+        padding: 10px; /* Adjust padding as needed */
+    }
+}
+.github-link {
+    display: inline-flex; /* Aligns child elements (icon and text) inline */
+    align-items: center; /* Centers items vertically */
+    background-color: var(--color-secondary); /* Your button background color */
+    color: var(--color-text); /* Your text color */
+    padding: 10px 20px; /* Padding around the text and icon */
+    border-radius: 0.5rem; /* Rounded corners */
+    text-decoration: none; /* Removes underline from links */
+    font-size: 16px; /* Font size for the text */
+    /* Other styles such as border, box-shadow as per your design */
+}
+
+.star-icon {
+    margin-right: 5px; /* Space between the star icon and the text */
+    /* Adjust the size of the star if necessary */
+}

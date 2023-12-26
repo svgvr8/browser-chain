@@ -221,25 +221,50 @@ const App = () => {
 		}
 	};
 
+	const Navbar = () => {
+		const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+		const toggleMenu = () => {
+			setIsMenuOpen(!isMenuOpen);
+		};
+
+		return (
+			<nav className="navbar">
+				<span className="navbar-brand">BrowserChain</span>
+				<div className="navbar-hamburger" onClick={toggleMenu}>
+					&#9776; {/* Hamburger Icon */}
+				</div>
+				<div className={`navbar-links ${isMenuOpen ? 'active' : ''}`}>
+					<a href="https://github.com/svgvr8/BrowserChain" target="_blank" rel="noopener noreferrer" class="github-link">
+						<span class="star-icon">⭐</span>
+						GitHub
+					</a><button id="connectMetaMask" onClick={connectMetaMask} title="Connect to your MetaMask wallet">Connect MetaMask</button>
+				</div>
+			</nav>
+		);
+	};
 
 	return (
 		<div>
-			<h1>BrowserChain</h1>
-			<section className="executive-summary">
-				<p>Welcome to BrowserChain! This application is a blockchain running in your browser.</p>
-				<ul>
-					<li>Creating and verifying blocks using BLAKE2b hashing.</li>
-					<li>Integrating with MetaMask for Ethereum-based transactions.</li>
-					<li>Signature verification using Ethereum keys.</li>
-					<li>A Patricia tree implementation for rapid data retrieval.</li>
+			<Navbar />
+			<div class="cards__card card">
+
+				<h2 class="card__heading">A blockchain running in your browser.</h2>
+				<p class="card__price">fast. secure. easy to use.</p>
+				<ul role="list" class="card__bullets flow">
+					<li>ethereum key generator, and block signer.</li>
+					<li>metamask supported, for metamask userbase.</li>
+					<li>blake2 hashing for block generation in 1µs.</li>
+					<li>patricia tree for 10x faster block retrieval.</li>
 				</ul>
-				<p>Explore and interact with blockchain technology right from your browser!</p>
-			</section>
-			<button id="connectMetaMask" onClick={connectMetaMask} title="Connect to your MetaMask wallet">Connect MetaMask</button>
-			<button id="generateKeys" onClick={generateKeys} title="Create your key pair to sign blocks">Get Ethereum Keys</button>
-			<button id="createBlockWithKeys" onClick={createBlockWithKeys} title="Create your ethereum key pairs, if you don't have metamask">Create Block (Ethereum)</button>
-			<button id="createBlockWithMetaMask" onClick={createBlockWithMetaMask} title="Create a block using your metamask keys">Create Block (MetaMask)</button>
-			<pre id="keys">{`Public Key: ${keys.publicKey}\nPrivate Key: ${keys.privateKey}`}</pre>
+				<div class="buttons-container">
+					<button id="createBlockWithKeys" onClick={createBlockWithKeys} title="Create your ethereum key pairs, if you don't have metamask">Create Block [Ethereum]</button>
+					<button id="generateKeys" onClick={generateKeys} title="Create your key pair to sign blocks">Get Ethereum Keys</button>
+					<button id="createBlockWithMetaMask" onClick={createBlockWithMetaMask} title="Create a block using your metamask keys">Create Block [MetaMask]</button>
+				</div>
+				<pre id="keys">{`Public Key: ${keys.publicKey}\nPrivate Key: ${keys.privateKey}`}</pre>
+			</div>
+
 			<div id="blocks-container">
 				{blocks.map((block, index) => (
 					<div key={index} className="block-card">
@@ -250,8 +275,10 @@ const App = () => {
 							<p><strong>Previous Hash:</strong> {block.previousHash}</p>
 							<p><strong>Signature:</strong> {block.signature}</p>
 							<p><strong>Hash:</strong> {block.hash}</p>
-							<button onClick={() => verifyBlock(block)}>Verify Block</button>
-							<button onClick={() => verifySignature(block)}>Verify Signature</button>
+							<div className="buttons-container">
+								<button onClick={() => verifyBlock(block)}>Verify Block</button>
+								<button onClick={() => verifySignature(block)}>Verify Signature</button>
+							</div>
 							<div className="verification-message">
 								{verificationMessages[block.index]}
 							</div>
